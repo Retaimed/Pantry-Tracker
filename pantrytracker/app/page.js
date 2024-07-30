@@ -1,95 +1,63 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+import { Box, Stack, Typography } from "@mui/material";
+import { firestore } from "@/firebase";
+import { collection, query, getDocs } from "firebase/firestore"; // import the required functions
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [pantry, setPantry] = useState([]);
+  
+  useEffect(() => {
+    const updatePantry = async () => {
+      const q = query(collection(firestore, 'Pantry'));
+      const snapshot = await getDocs(q);
+      const pantryList = [];
+      snapshot.forEach((doc) => {
+        pantryList.push(doc.id);
+      });
+      console.log(pantryList);
+      setPantry(pantryList);
+    };
+    updatePantry();
+  }, []);
+  
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    <Box 
+      width="100vw" 
+      height="100vh" // width and height set to the whole screen 
+      display={"flex"}
+      justifyContent={"center"}  
+      flexDirection={"column"}
+      alignItems={"center"}
+    >
+      <Box border={'1px solid #333'}>
+        <Box width="800px" height="100px" bgcolor={'#ADD8E6'}>
+          <Typography variant="h2" color={'#333'} textAlign={'center'}>
+            Pantry Tracker
+          </Typography>
+        </Box>
+        <Stack width="800px" height="300px" spacing={2} overflow={'scroll'}>
+          {pantry.map((item) => (
+            <Box 
+              key={item}
+              width="100%" 
+              height="100px"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              bgcolor={'#f0f0f0'}
+            >
+              <Typography
+                variant="h3"
+                color={'#333'}
+                textAlign={'center'}
+              >
+                {item.charAt(0).toUpperCase() + item.slice(1)}
+              </Typography>
+            </Box>
+          ))}
+        </Stack>
+      </Box>
+    </Box>
   );
 }
